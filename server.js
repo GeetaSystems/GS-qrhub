@@ -31,7 +31,7 @@ GET /qr?url=https://example.com
     Generate SVG QR code
 
 Example:
-${SERVER_Url}/qr?url=https://google.com
+${SERVER_URL}/qr?url=https://google.com
 
 Response:
 Returns raw SVG QR code image
