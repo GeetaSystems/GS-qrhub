@@ -2,7 +2,8 @@ const express = require('express');
 const QRCode = require('qrcode');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
+const SERVER_URL = process.env.SERVER_URL
 
 /**
  * Root route
@@ -30,7 +31,7 @@ GET /qr?url=https://example.com
     Generate SVG QR code
 
 Example:
-http://localhost:${PORT}/qr?url=https://google.com
+${SERVER_Url}/qr?url=https://google.com
 
 Response:
 Returns raw SVG QR code image
@@ -116,7 +117,7 @@ app.listen(PORT, () => {
 ========================================
 Geeta Systems Utility API
 GS-svgqr running on:
-http://localhost:${PORT}
+${SERVER_URL}
 ========================================
     `);
 });
