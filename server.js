@@ -3,12 +3,14 @@ const QRCode = require('qrcode');
 
 const app = express();
 const PORT = process.env.PORT;
-const SERVER_URL = process.env.SERVER_URL
+// const PORT = 3000;
+const SERVER_URL = process.env.SERVER_URL;
+// const SERVER_URL = "http://localhost:3000";
 
 /**
- * Root route
+ * Info route
  */
-app.get('/', (req, res) => {
+app.get('/info', (req, res) => {
     res.type('text/plain');
 
     res.send(`
@@ -21,17 +23,23 @@ Simple SVG QR Code Generator API
 
 Available Routes:
 
-GET /
+GET /info
     Show API usage
 
 GET /health
     Health check / wake-up endpoint
 
-GET /qr?url=https://example.com
-    Generate SVG QR code
+GET /?url=https://example.com
+    Generate SVG QR code from URL
 
-Example:
-${SERVER_URL}/qr?url=https://google.com
+GET /?text=HelloWorld
+    Generate SVG QR code from text
+
+Examples:
+
+${SERVER_URL}/?url=https://google.com
+
+${SERVER_URL}/?text=Hello%20World
 
 Response:
 Returns raw SVG QR code image
@@ -42,10 +50,6 @@ Made by Geeta Systems
 
 /**
  * Health route
- * Useful for:
- * - uptime monitoring
- * - cron wake-up pings
- * - docker/k8s health checks
  */
 app.get('/health', (req, res) => {
     res.status(200).json({
@@ -61,33 +65,48 @@ app.get('/health', (req, res) => {
 /**
  * QR route
  */
-app.get('/qr', async (req, res) => {
+app.get('/', async (req, res) => {
     try {
-        const url = req.query.url;
+        const { url, text } = req.query;
 
-        if (!url) {
+        // Require at least one parameter
+        if (!url && !text) {
             return res.status(400).json({
                 success: false,
-                error: 'Missing url query parameter',
+                error: 'Missing url or text query parameter',
                 brand: 'Geeta Systems',
                 service: 'GS-svgqr'
             });
         }
 
-        // URL validation
-        try {
-            new URL(url);
-        } catch {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid URL',
-                brand: 'Geeta Systems',
-                service: 'GS-svgqr'
-            });
+        let qrData = '';
+
+        /**
+         * URL mode
+         */
+        if (url) {
+            try {
+                new URL(url);
+                qrData = url;
+            } catch {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Invalid URL',
+                    brand: 'Geeta Systems',
+                    service: 'GS-svgqr'
+                });
+            }
+        }
+
+        /**
+         * Text mode
+         */
+        if (text) {
+            qrData = text;
         }
 
         // Generate SVG QR code
-        const svg = await QRCode.toString(url, {
+        const svg = await QRCode.toString(qrData, {
             type: 'svg',
             margin: 1,
             width: 300
