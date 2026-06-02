@@ -1,19 +1,30 @@
 {
-  "name": "gs-qr",
+  "name": "gs-qrhub",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "GS-QRHub - Geeta Systems multipurpose QR and barcode generation service",
+  "main": "src/app.js",
   "scripts": {
-    "start":"nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "lint": "eslint src/"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "keywords": ["qr", "barcode", "qrcode", "api", "svg"],
+  "author": "Geeta Systems",
+  "license": "MIT",
   "dependencies": {
-    "express": "^5.2.1",
-    "nodemon": "^3.1.14",
-    "qrcode": "^1.5.4"
+    "bwip-js": "^4.11.1",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
