@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>GS-QRHub — Geeta Systems | Advanced QR & Barcode Engine</title>
+  <!-- Prefer SVG favicon; include PNG fallback for browsers that don't support SVG favicons -->
+  <link rel="icon" href="/gsqrhub.svg" type="image/svg+xml">
+  <!-- <link rel="icon" href="/gsqrhub.png" type="image/png"> -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Clean, highly legible font stack: Inter as primary (sans) with Fallback for crisp UI, plus Space Mono for technical elements -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ── DESIGN SYSTEM (Super responsive + readability focused) ── */
+    :root {
+      --ink: #0b0b12;
+      --ink-2: #12121c;
+      --ink-3: #20222e;
+      --muted: #8a8aa3;
+      --subtle: #a9a9c2;
+      --line: rgba(255, 255, 255, 0.06);
+      --paper: #f6f5f2;
+      --accent: #00e5a0;
+      --accent-2: #8c6eff;
+      --warn: #ff5f57;
+      --glow: rgba(0, 229, 160, 0.16);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --font-mono: 'Space Mono', 'SF Mono', ui-monospace, monospace;
+      --transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Grid noise but subtle */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 35%, rgba(255, 255, 240, 0.012) 1px, transparent 1px),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 1px, transparent 1px, transparent 24px);
+      background-size: 40px 40px, 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ========== HEADER (flexible) ========== */
+    header {
+      padding: 1.2rem 0 1.5rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 0.25rem;
+    }
+
+    .header-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: nowrap;
+    }
+
+    .logo-mark {
+      width: 46px;
+      height: 46px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    .logo-mark svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .logo-text {
+      font-family: var(--font-body);
+      font-weight: 800;
+      font-size: clamp(1.4rem, 5vw, 1.9rem);
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .logo-sub {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 229, 160, 0.08);
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(0, 229, 160, 0.2);
+      border-radius: 60px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.6;
+        transform: scale(0.85);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* ========== TYPE NAVIGATION (scrollable on small screens) ========== */
+    .type-nav {
+      margin: 2rem 0 0.75rem;
+    }
+
+    .type-nav-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .type-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scrollbar-width: thin;
+    }
+
+    .type-tabs::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .type-section-label {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--ink-3);
+      background: var(--ink-2);
+      padding: 0.2rem 0.6rem;
+      border-radius: 30px;
+      white-space: nowrap;
+    }
+
+    .type-tab {
+      background: transparent;
+      border: 1px solid var(--ink-3);
+      border-radius: 40px;
+      padding: 0.4rem 1rem;
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 0.75rem;
+      letter-spacing: 0.01em;
+      color: var(--subtle);
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .type-tab:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--glow);
+      transform: translateY(-1px);
+    }
+
+    .type-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--ink);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 229, 160, 0.3);
+    }
+
+    /* ========== MAIN GRID (responsive: 1fr 340px on desktop, column on mobile) ========== */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.8rem;
+      margin: 2rem 0 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    /* Form panel */
+    .form-panel,
+    .options-panel {
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(2px);
+      transition: box-shadow 0.2s;
+    }
+
+    .panel-header {
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .panel-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .badge {
+      background: var(--accent);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      letter-spacing: 0.02em;
+    }
+
+    .form-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    /* fields */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .field-row-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
+    }
+
+    label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .req {
+      color: var(--accent);
+      margin-left: 4px;
+    }
+
+    input,
+    select,
+    textarea {
+      background: var(--ink);
+      border: 1px solid var(--ink-3);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 450;
+      color: var(--paper);
+      outline: none;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn-generate {
+      width: 100%;
+      background: linear-gradient(105deg, var(--accent) 0%, #1be5ab 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 0.9rem 1.2rem;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 0.5rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-generate:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(0, 229, 160, 0.3);
+    }
+
+    .btn-generate:active {
+      transform: translateY(1px);
+    }
+
+    /* url preview (clipped responsive) */
+    .url-preview {
+      background: var(--ink);
+      border: 1px solid var(--ink-3);
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .url-preview-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .url-preview-text {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      word-break: break-all;
+      flex: 1;
+    }
+
+    /* output panel */
+    .output-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      position: sticky;
+      top: 24px;
+    }
+
+    .qr-display {
+      background: var(--ink-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 1.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 320px;
+      transition: all 0.2s;
+    }
+
+    .qr-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .qr-placeholder-icon {
+      width: 80px;
+      height: 80px;
+      border: 2px dashed var(--ink-3);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-3);
+    }
+
+    .qr-placeholder-text {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    #qr-output svg {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: white;
+      padding: 4px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .qr-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .qr-type-tag {
+      background: rgba(140, 110, 255, 0.2);
+      color: var(--accent-2);
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-download {
+      background: rgba(0, 229, 160, 0.12);
+      border: 1px solid rgba(0, 229, 160, 0.3);
+      border-radius: 40px;
+      padding: 0.5rem 1rem;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: 0.15s;
+      color: var(--accent);
+    }
+
+    .btn-download:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--ink);
+    }
+
+    /* Options panel collapsible */
+    .options-toggle {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 1.1rem 1.5rem;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .options-toggle:hover {
+      color: var(--paper);
+    }
+
+    .arrow {
+      transition: transform 0.2s;
+      font-style: normal;
+      display: inline-block;
+    }
+
+    .options-toggle.open .arrow {
+      transform: rotate(180deg);
+    }
+
+    .options-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease-out, padding 0.2s;
+      padding: 0 1.5rem;
+    }
+
+    .options-body.open {
+      max-height: 600px;
+      padding: 0 1.5rem 1.5rem 1.5rem;
+    }
+
+    .color-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .color-input-wrap {
+      background: var(--ink);
+      border: 1px solid var(--ink-3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.3rem 1rem 0.3rem 0.7rem;
+    }
+
+    .color-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+    }
+
+    .color-hex {
+      background: transparent;
+      border: none;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.4rem 0;
+      width: 100%;
+    }
+
+    .error-bar {
+      background: rgba(255, 95, 87, 0.1);
+      border-left: 4px solid var(--warn);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      font-size: 0.75rem;
+      display: none;
+    }
+
+    .error-bar.visible {
+      display: block;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--ink-3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      margin-top: 2rem;
+      padding: 1.5rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      color: var(--subtle);
+      text-decoration: none;
+      transition: 0.2s;
+      font-weight: 500;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    .fade-in {
+      animation: fadeSlide 0.3s ease;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 540px) {
+      .wrap {
+        padding: 0.8rem 1rem 1.5rem;
+      }
+
+      .form-body {
+        padding: 1.2rem;
+      }
+
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .color-row {
+        grid-template-columns: 1fr;
+      }
+
+      .type-tab {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="header-inner">
+        <div class="logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="9" height="9" rx="1.5" fill="#0a0a0f" />
+              <rect x="15" y="2" width="9" height="9" rx="1.5" fill="#0a0a0f" />
+              <rect x="2" y="15" width="9" height="9" rx="1.5" fill="#0a0a0f" />
+              <rect x="15" y="15" width="4" height="4" rx="1" fill="#0a0a0f" />
+              <rect x="21" y="15" width="3" height="3" rx="0.8" fill="#0a0a0f" />
+              <rect x="15" y="21" width="3" height="3" rx="0.8" fill="#0a0a0f" />
+              <rect x="20" y="20" width="4" height="4" rx="1" fill="#0a0a0f" />
+            </svg>
+          </div>
+          <div>
+            <div class="logo-text">GS‑QRHub</div>
+            <div class="logo-sub">Geeta Systems</div>
+          </div>
+        </div>
+        <div class="status-pill"><span class="status-dot"></span> Active · QR Core</div>
+      </div>
+    </header>
+
+    <div class="type-nav">
+      <div class="type-nav-label">⟡ Encoder library</div>
+      <div class="type-tabs" id="type-tabs">
+        <span class="type-section-label">QR</span>
+        <button class="type-tab active" data-type="qr">qr</button>
+        <button class="type-tab" data-type="wifi">wifi</button>
+        <button class="type-tab" data-type="vcard">vcard</button>
+        <button class="type-tab" data-type="email">email</button>
+        <button class="type-tab" data-type="sms">sms</button>
+        <button class="type-tab" data-type="phone">phone</button>
+        <button class="type-tab" data-type="geo">geo</button>
+        <button class="type-tab" data-type="whatsapp">whatsapp</button>
+        <button class="type-tab" data-type="event">event</button>
+        <button class="type-tab" data-type="crypto">crypto</button>
+        <button class="type-tab" data-type="otp">otp</button>
+        <span class="type-section-label">Barcode</span>
+        <button class="type-tab" data-type="barcode">barcode</button>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        <div class="form-panel">
+          <div class="panel-header">
+            <div class="panel-title">📐 Parameters <span class="badge" id="active-type-badge">qr</span></div>
+          </div>
+          <div class="form-body" id="form-body"></div>
+        </div>
+
+        <div class="options-panel">
+          <button class="options-toggle" id="options-toggle">🎨 Render Options <i class="arrow">▾</i></button>
+          <div class="options-body" id="options-body">
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="field-row">
+                <div class="field"><label>Size (px) 50–2000</label><input type="number" id="opt-size" min="50"
+                    max="2000" value="320" /></div>
+                <div class="field"><label>Margin (0–20)</label><input type="number" id="opt-margin" min="0" max="20"
+                    value="4" /></div>
+              </div>
+              <div class="color-row">
+                <div class="field"><label>Dark Color</label>
+                  <div class="color-input-wrap"><input type="color" class="color-swatch" id="opt-dark-swatch"
+                      value="#000000" /><input type="text" class="color-hex" id="opt-dark-hex" value="000000"
+                      maxlength="6" /></div>
+                </div>
+                <div class="field"><label>Light Color</label>
+                  <div class="color-input-wrap"><input type="color" class="color-swatch" id="opt-light-swatch"
+                      value="#ffffff" /><input type="text" class="color-hex" id="opt-light-hex" value="ffffff"
+                      maxlength="6" /></div>
+                </div>
+              </div>
+              <div class="field" id="ecc-field"><label>Error Correction (QR only)</label><select id="opt-ecc">
+                  <option value="L">L — Low (7%)</option>
+                  <option value="M" selected>M — Medium (15%)</option>
+                  <option value="Q">Q — Quartile (25%)</option>
+                  <option value="H">H — High (30%)</option>
+                </select></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="url-preview"><span class="url-preview-label">🔗 API payload</span><span class="url-preview-text"
+            id="url-preview-text">—</span></div>
+      </div>
+
+      <div class="output-panel">
+        <div class="qr-display" id="qr-display">
+          <div class="qr-placeholder" id="qr-placeholder">
+            <div class="qr-placeholder-icon">◧◨</div>
+            <div class="qr-placeholder-text">Configure your data<br />⟳ Generate QR / Barcode</div>
+          </div>
+          <div id="qr-output" style="display:none;"></div>
+          <div class="spinner" id="qr-spinner" style="display:none;"></div>
+        </div>
+        <div class="error-bar" id="error-bar"></div>
+        <div id="qr-actions" style="display:none;">
+          <div class="qr-meta"><span class="qr-type-tag" id="qr-type-tag">—</span><button class="btn-download"
+              id="btn-download">⬇ Download SVG</button></div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-text">© 2026 Geeta Systems — Production Ready QR utility</div>
+      <div class="footer-links"><a href="#">health</a><a href="#">api docs</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // No functional changes — exactly same logic as original but with superset readability/responsiveness
+    const TYPE_FORMS = {
+      qr: { title: 'Plain Text / URL', fields: [{ id: 'text', label: 'Text or URL', type: 'input', placeholder: 'https://geetasystems.com or any text', required: true }] },
+      wifi: { title: 'WiFi Network', fields: [{ id: 'ssid', label: 'Network Name (SSID)', type: 'input', placeholder: 'CorporateNet', required: true }, { id: 'password', label: 'Password', type: 'input', placeholder: 'secret' }, { id: 'security', label: 'Security', type: 'select', options: ['WPA', 'WEP', 'nopass'], default: 'WPA' }, { id: 'hidden', label: 'Hidden Network', type: 'select', options: ['false', 'true'], default: 'false' }] },
+      vcard: { title: 'Contact Card (vCard)', fields: [{ id: 'name', label: 'Full Name', type: 'input', placeholder: 'Alex Rivera', required: true }, { id: 'phone', label: 'Phone', type: 'input', placeholder: '+1234567890' }, { id: 'email', label: 'Email', type: 'input', placeholder: 'alex@example.com' }, { id: 'org', label: 'Organisation', type: 'input', placeholder: 'Geeta' }, { id: 'title', label: 'Job Title', type: 'input', placeholder: 'Lead' }, { id: 'url', label: 'Website', type: 'input', placeholder: 'https://' }, { id: 'address', label: 'Address', type: 'input', placeholder: '123 Main St' }] },
+      email: { title: 'Email Compose', fields: [{ id: 'to', label: 'To', type: 'input', placeholder: 'recipient@example.com', required: true }, { id: 'subject', label: 'Subject', type: 'input', placeholder: 'Hello' }, { id: 'body', label: 'Body', type: 'textarea', placeholder: 'Your message...' }] },
+      sms: { title: 'SMS Message', fields: [{ id: 'phone', label: 'Phone', type: 'input', placeholder: '+19876543210', required: true }, { id: 'message', label: 'Message', type: 'textarea', placeholder: 'Hello from Geeta' }] },
+      phone: { title: 'Phone Call', fields: [{ id: 'number', label: 'Phone Number', type: 'input', placeholder: '+15551234567', required: true }] },
+      geo: { title: 'Geographic Location', fields: [{ id: 'lat', label: 'Latitude', type: 'input', placeholder: '40.7128', required: true }, { id: 'lng', label: 'Longitude', type: 'input', placeholder: '-74.0060', required: true }] },
+      whatsapp: { title: 'WhatsApp', fields: [{ id: 'phone', label: 'Phone (no +)', type: 'input', placeholder: '919876543210', required: true }, { id: 'message', label: 'Pre-fill Text', type: 'textarea', placeholder: 'Hi there!' }] },
+      event: { title: 'Calendar Event', fields: [{ id: 'title', label: 'Event Title', type: 'input', placeholder: 'Launch', required: true }, { id: 'start', label: 'Start (ISO)', type: 'input', placeholder: '2026-06-01T10:00:00Z', required: true }, { id: 'end', label: 'End (ISO)', type: 'input', placeholder: '2026-06-01T11:00:00Z' }, { id: 'location', label: 'Location', type: 'input', placeholder: 'HQ' }, { id: 'description', label: 'Description', type: 'input', placeholder: 'notes' }] },
+      crypto: { title: 'Cryptocurrency Payment', fields: [{ id: 'coin', label: 'Coin', type: 'input', placeholder: 'bitcoin', required: true }, { id: 'address', label: 'Address', type: 'input', placeholder: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', required: true }, { id: 'amount', label: 'Amount', type: 'input', placeholder: '0.01' }, { id: 'label', label: 'Label', type: 'input', placeholder: 'Invoice' }, { id: 'message', label: 'Note', type: 'input', placeholder: 'Payment reference' }] },
+      otp: { title: 'TOTP Authenticator', fields: [{ id: 'issuer', label: 'Issuer / App Name', type: 'input', placeholder: 'GeetaSecure', required: true }, { id: 'account', label: 'Account', type: 'input', placeholder: 'user@example.com', required: true }, { id: 'secret', label: 'Secret (Base32)', type: 'input', placeholder: 'JBSWY3DPEHPK3PXP', required: true }, { id: 'algorithm', label: 'Algorithm', type: 'select', options: ['SHA1', 'SHA256'], default: 'SHA1' }, { id: 'digits', label: 'Digits', type: 'select', options: ['6', '8'], default: '6' }, { id: 'period', label: 'Period (s)', type: 'input', placeholder: '30' }] },
+      barcode: { title: 'Barcode', fields: [{ id: 'text', label: 'Barcode Data', type: 'input', placeholder: 'ABC123XYZ', required: true }, { id: 'format', label: 'Format', type: 'select', options: ['code128', 'code39', 'ean13', 'ean8', 'upca', 'upce', 'interleaved2of5', 'gs1-128', 'pdf417', 'datamatrix'], default: 'code128' }] }
+    };
+    let currentType = 'qr', lastSvg = null;
+    const formBody = document.getElementById('form-body'), typeBadge = document.getElementById('active-type-badge'), urlPreviewSpan = document.getElementById('url-preview-text');
+    const qrPlaceholderDiv = document.getElementById('qr-placeholder'), qrOutputDiv = document.getElementById('qr-output'), qrSpinnerDiv = document.getElementById('qr-spinner');
+    const qrActionsDiv = document.getElementById('qr-actions'), qrTypeTagSpan = document.getElementById('qr-type-tag'), errorBarDiv = document.getElementById('error-bar'), btnDownloadBtn = document.getElementById('btn-download');
+    const optToggleBtn = document.getElementById('options-toggle'), optBodyDiv = document.getElementById('options-body'), optSizeInp = document.getElementById('opt-size'), optMarginInp = document.getElementById('opt-margin');
+    const optDarkSwatch = document.getElementById('opt-dark-swatch'), optDarkHex = document.getElementById('opt-dark-hex'), optLightSwatch = document.getElementById('opt-light-swatch'), optLightHex = document.getElementById('opt-light-hex'), optEccSel = document.getElementById('opt-ecc'), eccFieldDiv = document.getElementById('ecc-field');
+    function renderForm(type) { const def = TYPE_FORMS[type]; typeBadge.textContent = type; formBody.innerHTML = ''; def.fields.forEach(f => { const fieldDiv = document.createElement('div'); fieldDiv.className = 'field'; const lbl = document.createElement('label'); lbl.htmlFor = `f-${f.id}`; lbl.innerHTML = f.label + (f.required ? '<span class="req">*</span>' : ''); fieldDiv.appendChild(lbl); let el; if (f.type === 'select') { el = document.createElement('select'); f.options.forEach(opt => { const op = document.createElement('option'); op.value = opt; op.textContent = opt; if (opt === f.default) op.selected = true; el.appendChild(op); }); } else if (f.type === 'textarea') { el = document.createElement('textarea'); el.placeholder = f.placeholder || ''; } else { el = document.createElement('input'); el.type = 'text'; el.placeholder = f.placeholder || ''; } el.id = `f-${f.id}`; el.addEventListener('input', updatePreview); el.addEventListener('change', updatePreview); fieldDiv.appendChild(el); formBody.appendChild(fieldDiv); }); const btnWrap = document.createElement('div'); const genBtn = document.createElement('button'); genBtn.className = 'btn-generate'; genBtn.textContent = 'Generate Code'; genBtn.id = 'btn-generate'; genBtn.addEventListener('click', generate); btnWrap.appendChild(genBtn); formBody.appendChild(btnWrap); eccFieldDiv.style.display = type === 'barcode' ? 'none' : ''; updatePreview(); }
+    function buildParams() { const params = new URLSearchParams(); params.set('type', currentType); const def = TYPE_FORMS[currentType]; def.fields.forEach(f => { const el = document.getElementById(`f-${f.id}`); if (el && el.value.trim()) params.set(f.id, el.value.trim()); }); if (optSizeInp.value && optSizeInp.value !== '300') params.set('size', optSizeInp.value); if (optMarginInp.value && optMarginInp.value !== '4') params.set('margin', optMarginInp.value); const dark = optDarkHex.value.replace('#', '').trim(); const light = optLightHex.value.replace('#', '').trim(); if (dark && dark !== '000000') params.set('darkColor', dark); if (light && light !== 'ffffff') params.set('lightColor', light); if (optEccSel.value && optEccSel.value !== 'M') params.set('errorCorrectionLevel', optEccSel.value); return params; }
+    function updatePreview() { const params = buildParams(); urlPreviewSpan.textContent = '/?' + params.toString(); }
+    async function generate() { const btn = document.getElementById('btn-generate'); if (btn) btn.classList.add('loading'); errorBarDiv.classList.remove('visible'); if (qrPlaceholderDiv) qrPlaceholderDiv.style.display = 'none'; if (qrOutputDiv) qrOutputDiv.style.display = 'none'; if (qrSpinnerDiv) qrSpinnerDiv.style.display = 'block'; if (qrActionsDiv) qrActionsDiv.style.display = 'none'; const params = buildParams(); const url = '/?' + params.toString(); try { const res = await fetch(url); const ct = res.headers.get('content-type') || ''; if (!res.ok || !ct.includes('svg')) { let msg = `Error ${res.status}`; try { const j = await res.json(); msg = j.error || msg; } catch (e) { } throw new Error(msg); } const svg = await res.text(); lastSvg = svg; if (qrSpinnerDiv) qrSpinnerDiv.style.display = 'none'; if (qrOutputDiv) { qrOutputDiv.innerHTML = svg; qrOutputDiv.style.display = 'flex'; qrOutputDiv.classList.add('fade-in'); setTimeout(() => qrOutputDiv.classList.remove('fade-in'), 400); } if (qrTypeTagSpan) qrTypeTagSpan.textContent = currentType.toUpperCase(); if (qrActionsDiv) qrActionsDiv.style.display = 'block'; } catch (err) { if (qrSpinnerDiv) qrSpinnerDiv.style.display = 'none'; if (qrPlaceholderDiv) qrPlaceholderDiv.style.display = 'flex'; errorBarDiv.textContent = err.message; errorBarDiv.classList.add('visible'); } finally { if (btn) { btn.classList.remove('loading'); btn.textContent = 'Generate Code'; } } }
+    btnDownloadBtn.addEventListener('click', () => { if (!lastSvg) return; const blob = new Blob([lastSvg], { type: 'image/svg+xml' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `gs-qrhub-${currentType}-${Date.now()}.svg`; a.click(); URL.revokeObjectURL(a.href); });
+    document.getElementById('type-tabs').addEventListener('click', e => { if (!e.target.matches('.type-tab')) return; document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active')); e.target.classList.add('active'); currentType = e.target.dataset.type; lastSvg = null; if (qrOutputDiv) qrOutputDiv.innerHTML = ''; if (qrOutputDiv) qrOutputDiv.style.display = 'none'; if (qrPlaceholderDiv) qrPlaceholderDiv.style.display = 'flex'; if (qrActionsDiv) qrActionsDiv.style.display = 'none'; errorBarDiv.classList.remove('visible'); renderForm(currentType); });
+    optToggleBtn.addEventListener('click', () => { const open = optBodyDiv.classList.toggle('open'); optToggleBtn.classList.toggle('open', open); });
+    optDarkSwatch.addEventListener('input', () => { optDarkHex.value = optDarkSwatch.value.replace('#', ''); updatePreview(); }); optDarkHex.addEventListener('input', () => { if (/^[0-9a-fA-F]{6}$/.test(optDarkHex.value)) optDarkSwatch.value = '#' + optDarkHex.value; updatePreview(); }); optLightSwatch.addEventListener('input', () => { optLightHex.value = optLightSwatch.value.replace('#', ''); updatePreview(); }); optLightHex.addEventListener('input', () => { if (/^[0-9a-fA-F]{6}$/.test(optLightHex.value)) optLightSwatch.value = '#' + optLightHex.value; updatePreview(); });[optSizeInp, optMarginInp, optEccSel].forEach(el => el.addEventListener('change', updatePreview)); document.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && document.activeElement?.tagName !== 'TEXTAREA') generate(); });
+    renderForm('qr');
+  </script>
+</body>
+
+</html>
