@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GS-QRHub Docs — Geeta Systems</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Tokens ─────────────────────────────────────────────────────────────── */
+    :root {
+      --bg:        #f7f6f2;
+      --bg-2:      #efede8;
+      --bg-3:      #e5e2db;
+      --ink:       #1a1814;
+      --ink-2:     #3d3a34;
+      --ink-3:     #6b6760;
+      --line:      #d9d5cc;
+      --accent:    #1a6b4a;
+      --accent-2:  #0f4a32;
+      --accent-bg: #e8f4ef;
+      --warn:      #92400e;
+      --warn-bg:   #fef3c7;
+      --code-bg:   #1e1c18;
+      --code-fg:   #e8e3d8;
+      --code-green:#6ee7b7;
+      --code-blue: #93c5fd;
+      --code-yellow:#fde68a;
+      --code-red:  #fca5a5;
+      --code-gray: #9ca3af;
+      --radius:    8px;
+      --mono:      'DM Mono', monospace;
+      --serif:     'Fraunces', Georgia, serif;
+    }
+
+    /* ── Reset ──────────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--ink); font-family: var(--mono); font-size: 14px; line-height: 1.7; }
+
+    /* ── Layout ─────────────────────────────────────────────────────────────── */
+    .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* ── Sidebar ─────────────────────────────────────────────────────────────── */
+    .sidebar {
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      background: var(--bg-2); border-right: 1px solid var(--line);
+      padding: 0; display: flex; flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .sidebar-logo-mark {
+      width: 32px; height: 32px; background: var(--accent); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .sidebar-logo-mark svg { width: 18px; height: 18px; }
+    .sidebar-logo-text { font-family: var(--serif); font-weight: 700; font-size: 1rem; color: var(--ink); letter-spacing: -0.02em; }
+    .sidebar-logo-sub { font-size: 0.65rem; color: var(--ink-3); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .sidebar-nav { padding: 16px 0 24px; flex: 1; }
+    .nav-section { padding: 0 20px; margin-bottom: 6px; }
+    .nav-section-label {
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--ink-3); padding: 12px 0 6px; display: block;
+    }
+    .nav-item {
+      display: block; color: var(--ink-2); text-decoration: none;
+      font-size: 0.78rem; padding: 5px 10px; border-radius: 5px;
+      transition: all 0.12s; margin-bottom: 1px; letter-spacing: 0.01em;
+    }
+    .nav-item:hover { background: var(--bg-3); color: var(--accent); }
+    .nav-item.active { background: var(--accent-bg); color: var(--accent-2); font-weight: 500; }
+    .nav-item.sub { padding-left: 20px; font-size: 0.74rem; color: var(--ink-3); }
+    .nav-item.sub:hover { color: var(--accent); }
+
+    .sidebar-footer {
+      padding: 16px 20px; border-top: 1px solid var(--line);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .sidebar-btn {
+      display: block; text-align: center; padding: 8px;
+      border-radius: 6px; font-size: 0.72rem; text-decoration: none;
+      letter-spacing: 0.04em; transition: all 0.12s;
+    }
+    .sidebar-btn.primary { background: var(--accent); color: #fff; }
+    .sidebar-btn.primary:hover { background: var(--accent-2); }
+    .sidebar-btn.secondary { background: var(--bg-3); color: var(--ink-2); border: 1px solid var(--line); }
+    .sidebar-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Main content ────────────────────────────────────────────────────────── */
+    .content { max-width: 860px; padding: 48px 48px 96px; }
+    @media (max-width: 1100px) { .content { padding: 32px 28px 64px; } }
+
+    /* ── Typography ──────────────────────────────────────────────────────────── */
+    .page-title {
+      font-family: var(--serif); font-weight: 700; font-size: 2.4rem;
+      letter-spacing: -0.04em; line-height: 1.15; color: var(--ink);
+      margin-bottom: 12px;
+    }
+    .page-subtitle { color: var(--ink-3); font-size: 0.9rem; margin-bottom: 40px; line-height: 1.6; }
+
+    h2 {
+      font-family: var(--serif); font-weight: 600; font-size: 1.5rem;
+      letter-spacing: -0.03em; color: var(--ink); margin: 56px 0 16px;
+      padding-top: 4px; border-top: 2px solid var(--line);
+      padding-top: 24px;
+    }
+    h2:first-of-type { margin-top: 0; }
+    h3 {
+      font-family: var(--serif); font-weight: 600; font-size: 1.1rem;
+      letter-spacing: -0.02em; color: var(--ink-2); margin: 32px 0 12px;
+    }
+    h4 {
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-3); margin: 24px 0 8px;
+    }
+    p { color: var(--ink-2); margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── Anchor links ────────────────────────────────────────────────────────── */
+    h2[id], h3[id] { scroll-margin-top: 24px; }
+
+    /* ── Inline code ─────────────────────────────────────────────────────────── */
+    code {
+      font-family: var(--mono); font-size: 0.82em;
+      background: var(--bg-3); color: var(--accent-2);
+      padding: 2px 6px; border-radius: 4px;
+      border: 1px solid var(--line);
+    }
+
+    /* ── Code blocks ─────────────────────────────────────────────────────────── */
+    .code-block {
+      background: var(--code-bg); border-radius: var(--radius);
+      margin: 16px 0; overflow: hidden;
+    }
+    .code-block-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .code-block-label {
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #6b7280;
+    }
+    .copy-btn {
+      background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
+      color: #9ca3af; font-family: var(--mono); font-size: 0.65rem;
+      letter-spacing: 0.06em; padding: 3px 8px; cursor: pointer;
+      text-transform: uppercase; transition: all 0.15s;
+    }
+    .copy-btn:hover { border-color: var(--code-green); color: var(--code-green); }
+    .copy-btn.copied { color: var(--code-green); border-color: var(--code-green); }
+    pre {
+      font-family: var(--mono); font-size: 0.8rem; line-height: 1.7;
+      padding: 16px; overflow-x: auto; color: var(--code-fg);
+      white-space: pre;
+    }
+    .k  { color: var(--code-blue); }   /* keyword */
+    .s  { color: var(--code-green); }  /* string */
+    .c  { color: var(--code-gray); font-style: italic; } /* comment */
+    .n  { color: var(--code-yellow); } /* number / param name */
+    .e  { color: var(--code-red); }    /* error / warning */
+    .url-line { color: var(--code-green); }
+
+    /* ── Param table ─────────────────────────────────────────────────────────── */
+    .param-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 0.8rem; }
+    .param-table th {
+      text-align: left; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-3); padding: 8px 12px; border-bottom: 2px solid var(--line);
+      font-weight: 500;
+    }
+    .param-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); }
+    .param-table tr:last-child td { border-bottom: none; }
+    .param-table tr:hover td { background: var(--bg-2); }
+    .param-table code { font-size: 0.78rem; }
+    .req-badge { display: inline-block; background: var(--accent-bg); color: var(--accent-2); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(26,107,74,0.2); vertical-align: middle; margin-left: 4px; }
+    .opt-badge { display: inline-block; background: var(--bg-3); color: var(--ink-3); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--line); vertical-align: middle; margin-left: 4px; }
+
+    /* ── Callout boxes ───────────────────────────────────────────────────────── */
+    .callout {
+      border-radius: var(--radius); padding: 14px 16px; margin: 16px 0;
+      font-size: 0.83rem; line-height: 1.6; display: flex; gap: 12px;
+    }
+    .callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .callout.info { background: var(--accent-bg); border: 1px solid rgba(26,107,74,0.2); color: var(--accent-2); }
+    .callout.warn { background: var(--warn-bg); border: 1px solid rgba(146,64,14,0.2); color: var(--warn); }
+
+    /* ── Response example ────────────────────────────────────────────────────── */
+    .response-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+    @media (max-width: 700px) { .response-grid { grid-template-columns: 1fr; } }
+
+    /* ── Type cards ──────────────────────────────────────────────────────────── */
+    .type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin: 16px 0; }
+    .type-card {
+      background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 14px; text-decoration: none; transition: all 0.15s; display: block;
+    }
+    .type-card:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .type-card-name { font-weight: 500; color: var(--accent-2); font-size: 0.85rem; margin-bottom: 4px; }
+    .type-card-desc { font-size: 0.72rem; color: var(--ink-3); line-height: 1.5; }
+
+    /* ── Section divider ─────────────────────────────────────────────────────── */
+    .divider { height: 1px; background: var(--line); margin: 48px 0; }
+
+    /* ── Top bar (mobile) ────────────────────────────────────────────────────── */
+    .topbar {
+      display: none; background: var(--bg-2); border-bottom: 1px solid var(--line);
+      padding: 14px 20px; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    @media (max-width: 900px) { .topbar { display: flex; } }
+    .topbar-logo { font-family: var(--serif); font-weight: 700; font-size: 1rem; color: var(--ink); text-decoration: none; }
+    .topbar-links { display: flex; gap: 12px; }
+    .topbar-links a { color: var(--ink-3); font-size: 0.75rem; text-decoration: none; }
+    .topbar-links a:hover { color: var(--accent); }
+
+    /* ── Barcode format badges ───────────────────────────────────────────────── */
+    .format-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .format-badge {
+      background: var(--code-bg); color: var(--code-green); font-family: var(--mono);
+      font-size: 0.72rem; padding: 4px 10px; border-radius: 5px; border: 1px solid rgba(110,231,183,0.15);
+    }
+
+    /* ── Error table ─────────────────────────────────────────────────────────── */
+    .status-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 12px 0; }
+    .status-table th { text-align: left; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); padding: 8px 12px; border-bottom: 2px solid var(--line); }
+    .status-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+    .status-badge { display: inline-block; font-family: var(--mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+    .s200 { background: #d1fae5; color: #065f46; }
+    .s400 { background: #fef3c7; color: #92400e; }
+    .s404 { background: #e0e7ff; color: #3730a3; }
+    .s429 { background: #fce7f3; color: #9d174d; }
+    .s500 { background: #fee2e2; color: #991b1b; }
+
+    /* ── TOC highlight on scroll ─────────────────────────────────────────────── */
+    .nav-item.active { background: var(--accent-bg); color: var(--accent-2); }
+  </style>
+</head>
+<body>
+
+<!-- Mobile top bar -->
+<nav class="topbar">
+  <a href="/" class="topbar-logo">GS-QRHub</a>
+  <div class="topbar-links">
+    <a href="/">Generator</a>
+    <a href="/health">Health</a>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="/" class="sidebar-logo">
+        <div class="sidebar-logo-mark">
+          <svg viewBox="0 0 26 26" fill="none"><rect x="2" y="2" width="9" height="9" rx="1.5" fill="#fff"/><rect x="15" y="2" width="9" height="9" rx="1.5" fill="#fff"/><rect x="2" y="15" width="9" height="9" rx="1.5" fill="#fff"/><rect x="15" y="15" width="4" height="4" rx="1" fill="#fff"/><rect x="21" y="15" width="3" height="3" rx=".8" fill="#fff"/><rect x="15" y="21" width="3" height="3" rx=".8" fill="#fff"/><rect x="20" y="20" width="4" height="4" rx="1" fill="#fff"/></svg>
+        </div>
+        <div>
+          <div class="sidebar-logo-text">GS-QRHub</div>
+          <div class="sidebar-logo-sub">Geeta Systems</div>
+        </div>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-label">Getting Started</span>
+        <a href="#overview"      class="nav-item">Overview</a>
+        <a href="#base-url"      class="nav-item">Base URL</a>
+        <a href="#quickstart"    class="nav-item">Quickstart</a>
+        <a href="#response"      class="nav-item">Response Format</a>
+        <a href="#errors"        class="nav-item">Error Handling</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">QR Types</span>
+        <a href="#type-qr"        class="nav-item sub">qr — Text / URL</a>
+        <a href="#type-wifi"      class="nav-item sub">wifi</a>
+        <a href="#type-vcard"     class="nav-item sub">vcard</a>
+        <a href="#type-email"     class="nav-item sub">email</a>
+        <a href="#type-sms"       class="nav-item sub">sms</a>
+        <a href="#type-phone"     class="nav-item sub">phone</a>
+        <a href="#type-geo"       class="nav-item sub">geo</a>
+        <a href="#type-whatsapp"  class="nav-item sub">whatsapp</a>
+        <a href="#type-event"     class="nav-item sub">event</a>
+        <a href="#type-crypto"    class="nav-item sub">crypto</a>
+        <a href="#type-otp"       class="nav-item sub">otp</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Barcodes</span>
+        <a href="#barcodes"     class="nav-item">Barcode Formats</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">Customisation</span>
+        <a href="#render-options" class="nav-item">Render Options</a>
+        <a href="#colors"         class="nav-item">Colors</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-section-label">API Reference</span>
+        <a href="#endpoints"    class="nav-item">All Endpoints</a>
+        <a href="#rate-limiting" class="nav-item">Rate Limiting</a>
+        <a href="#headers"       class="nav-item">Headers</a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="/"       class="sidebar-btn primary">Open Generator →</a>
+      <a href="/health" class="sidebar-btn secondary">Health Check</a>
+    </div>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────────────────────── -->
+  <main class="content">
+
+    <!-- Header -->
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <span style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);">v1.0.0</span>
+        <span style="width:4px;height:4px;border-radius:50%;background:var(--line);display:inline-block;"></span>
+        <span style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--accent-bg);padding:2px 8px;border-radius:4px;border:1px solid rgba(26,107,74,.2);">REST API</span>
+      </div>
+      <h1 class="page-title">GS-QRHub<br/>Documentation</h1>
+      <p class="page-subtitle">A single-endpoint API for generating QR codes and barcodes as SVG. 11 QR types, 10 barcode formats, fully customisable output. No authentication required.</p>
+    </div>
+
+    <!-- ── Overview ──────────────────────────────────────────────────────── -->
+    <h2 id="overview">Overview</h2>
+    <p>GS-QRHub exposes one generation endpoint: <code>GET /</code>. The <code>type</code> query parameter selects what to generate; additional parameters provide the content. The response is always a raw <code>image/svg+xml</code> string on success, or a JSON error object on failure.</p>
+
+    <div class="type-grid">
+      <a href="#type-qr"       class="type-card"><div class="type-card-name">qr</div><div class="type-card-desc">Plain text or any URL</div></a>
+      <a href="#type-wifi"     class="type-card"><div class="type-card-name">wifi</div><div class="type-card-desc">WiFi network credentials</div></a>
+      <a href="#type-vcard"    class="type-card"><div class="type-card-name">vcard</div><div class="type-card-desc">Contact card (vCard 3.0)</div></a>
+      <a href="#type-email"    class="type-card"><div class="type-card-name">email</div><div class="type-card-desc">Email compose link</div></a>
+      <a href="#type-sms"      class="type-card"><div class="type-card-name">sms</div><div class="type-card-desc">SMS to a phone number</div></a>
+      <a href="#type-phone"    class="type-card"><div class="type-card-name">phone</div><div class="type-card-desc">Phone call dial link</div></a>
+      <a href="#type-geo"      class="type-card"><div class="type-card-name">geo</div><div class="type-card-desc">Geographic coordinates</div></a>
+      <a href="#type-whatsapp" class="type-card"><div class="type-card-name">whatsapp</div><div class="type-card-desc">WhatsApp deep link</div></a>
+      <a href="#type-event"    class="type-card"><div class="type-card-name">event</div><div class="type-card-desc">Calendar event (iCal)</div></a>
+      <a href="#type-crypto"   class="type-card"><div class="type-card-name">crypto</div><div class="type-card-desc">Cryptocurrency payment</div></a>
+      <a href="#type-otp"      class="type-card"><div class="type-card-name">otp</div><div class="type-card-desc">TOTP authenticator</div></a>
+      <a href="#barcodes"      class="type-card"><div class="type-card-name">barcode</div><div class="type-card-desc">10 barcode formats</div></a>
+    </div>
+
+    <!-- ── Base URL ───────────────────────────────────────────────────────── -->
+    <h2 id="base-url">Base URL</h2>
+    <p>All requests are <code>GET</code> to the root path. Replace the host with your deployment URL.</p>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Base</span></div>
+      <pre><span class="url-line">https://your-deployment.onrender.com/</span></pre>
+    </div>
+    <p>The interactive generator lives at <code>/ui</code> and this documentation at <code>/docs</code>.</p>
+
+    <!-- ── Quickstart ─────────────────────────────────────────────────────── -->
+    <h2 id="quickstart">Quickstart</h2>
+    <p>Generate your first QR code in one request:</p>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">curl</span><button class="copy-btn" onclick="copy(this,'curl -s \"https://your-host/?type=qr&url=https://example.com\" -o qr.svg')">Copy</button></div>
+      <pre><span class="k">curl</span> <span class="n">-s</span> <span class="s">"https://your-host/?type=qr&url=https://example.com"</span> <span class="n">-o</span> qr.svg</pre>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">JavaScript (fetch)</span><button class="copy-btn" onclick="copy(this,`const res = await fetch('/?type=qr&url=https://example.com');\nconst svg = await res.text();\ndocument.getElementById('qr').innerHTML = svg;`)">Copy</button></div>
+      <pre><span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">'/?type=qr&url=https://example.com'</span>);
+<span class="k">const</span> svg = <span class="k">await</span> res.text();
+document.getElementById(<span class="s">'qr'</span>).innerHTML = svg;</pre>
+    </div>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Python (requests)</span><button class="copy-btn" onclick="copy(this,'import requests\nr = requests.get(\"https://your-host/\", params={\"type\": \"qr\", \"url\": \"https://example.com\"})\nopen(\"qr.svg\", \"w\").write(r.text)')">Copy</button></div>
+      <pre><span class="k">import</span> requests
+r = requests.get(<span class="s">"https://your-host/"</span>, params={<span class="s">"type"</span>: <span class="s">"qr"</span>, <span class="s">"url"</span>: <span class="s">"https://example.com"</span>})
+open(<span class="s">"qr.svg"</span>, <span class="s">"w"</span>).write(r.text)</pre>
+    </div>
+
+    <!-- ── Response format ────────────────────────────────────────────────── -->
+    <h2 id="response">Response Format</h2>
+    <div class="response-grid">
+      <div>
+        <h4>Success</h4>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-block-label">HTTP 200</span></div>
+          <pre><span class="c">Content-Type: image/svg+xml
+Cache-Control: public, max-age=3600
+X-Service: GS-QRHub</span>
+
+<span class="s">&lt;svg xmlns="http://www.w3.org/2000/svg" ...&gt;
+  ...
+&lt;/svg&gt;</span></pre>
+        </div>
+      </div>
+      <div>
+        <h4>Error</h4>
+        <div class="code-block">
+          <div class="code-block-header"><span class="code-block-label">HTTP 4xx / 5xx</span></div>
+          <pre><span class="c">Content-Type: application/json</span>
+
+{
+  <span class="s">"success"</span>: <span class="e">false</span>,
+  <span class="s">"error"</span>: <span class="s">"Validation message"</span>
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Errors ─────────────────────────────────────────────────────────── -->
+    <h2 id="errors">Error Handling</h2>
+    <table class="status-table">
+      <thead><tr><th>Status</th><th>When</th><th>Body</th></tr></thead>
+      <tbody>
+        <tr><td><span class="status-badge s200">200</span></td><td>Successful generation</td><td>Raw SVG string</td></tr>
+        <tr><td><span class="status-badge s400">400</span></td><td>Validation failure, unknown <code>type</code>, missing required param</td><td><code>{ success: false, error: "..." }</code></td></tr>
+        <tr><td><span class="status-badge s404">404</span></td><td>Route not found (e.g. <code>/unknown</code>)</td><td><code>{ success: false, error: "..." }</code></td></tr>
+        <tr><td><span class="status-badge s429">429</span></td><td>Rate limit exceeded (100 req/min default)</td><td><code>{ success: false, error: "Rate limit exceeded..." }</code></td></tr>
+        <tr><td><span class="status-badge s500">500</span></td><td>Internal server error</td><td><code>{ success: false, error: "An unexpected error occurred." }</code></td></tr>
+      </tbody>
+    </table>
+    <div class="callout info"><span class="callout-icon">ℹ️</span><div>Stack traces are never exposed in production. All errors return clean JSON.</div></div>
+
+    <div class="divider"></div>
+
+    <!-- ══════════════ QR TYPES ══════════════ -->
+    <h2>QR Types</h2>
+
+    <!-- qr -->
+    <h3 id="type-qr">qr — Plain Text / URL</h3>
+    <p>The simplest type. Encode any string or URL into a QR code. Use <code>url</code> for links and <code>text</code> for everything else.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>type=qr</code></td><td><span class="req-badge">req</span></td><td>Type selector</td></tr>
+        <tr><td><code>text</code></td><td><span class="opt-badge">opt*</span></td><td>Any string to encode. Required if <code>url</code> is absent.</td></tr>
+        <tr><td><code>url</code></td><td><span class="opt-badge">opt*</span></td><td>A valid <code>http://</code> or <code>https://</code> URL. Required if <code>text</code> is absent.</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Examples</span><button class="copy-btn" onclick="copy(this,'/?type=qr&text=Hello World\n/?type=qr&url=https://geetasystems.in\n/?type=qr&url=https://example.com&size=500&errorCorrectionLevel=H')">Copy</button></div>
+      <pre><span class="url-line">/?type=qr&text=Hello World</span>
+<span class="url-line">/?type=qr&url=https://geetasystems.in</span>
+<span class="url-line">/?type=qr&url=https://example.com&size=500&errorCorrectionLevel=H</span></pre>
+    </div>
+
+    <!-- wifi -->
+    <h3 id="type-wifi">wifi — WiFi Network</h3>
+    <p>Generates a WiFi QR code using the <code>WIFI:</code> URI scheme. Scanning with a phone instantly connects to the network — no typing required.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>ssid</code></td><td><span class="req-badge">req</span></td><td>Network name (SSID)</td></tr>
+        <tr><td><code>password</code></td><td><span class="opt-badge">opt</span></td><td>Network password. Required for WPA/WEP; omit for <code>nopass</code>.</td></tr>
+        <tr><td><code>security</code></td><td><span class="opt-badge">opt</span></td><td><code>WPA</code> (default), <code>WEP</code>, or <code>nopass</code></td></tr>
+        <tr><td><code>hidden</code></td><td><span class="opt-badge">opt</span></td><td><code>true</code> if the network is hidden. Default: <code>false</code></td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Examples</span></div>
+      <pre><span class="url-line">/?type=wifi&ssid=OfficeWifi&password=secret123&security=WPA</span>
+<span class="url-line">/?type=wifi&ssid=GuestNet&security=nopass</span>
+<span class="url-line">/?type=wifi&ssid=HiddenNet&password=pass&security=WPA&hidden=true</span></pre>
+    </div>
+
+    <!-- vcard -->
+    <h3 id="type-vcard">vcard — Contact Card</h3>
+    <p>Generates a vCard 3.0 QR code. Scanning adds the contact directly to the phone's address book.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>name</code></td><td><span class="req-badge">req</span></td><td>Full name (FN field)</td></tr>
+        <tr><td><code>phone</code></td><td><span class="opt-badge">opt</span></td><td>Phone number</td></tr>
+        <tr><td><code>email</code></td><td><span class="opt-badge">opt</span></td><td>Email address (must be valid)</td></tr>
+        <tr><td><code>org</code></td><td><span class="opt-badge">opt</span></td><td>Organisation name</td></tr>
+        <tr><td><code>title</code></td><td><span class="opt-badge">opt</span></td><td>Job title</td></tr>
+        <tr><td><code>url</code></td><td><span class="opt-badge">opt</span></td><td>Website URL</td></tr>
+        <tr><td><code>address</code></td><td><span class="opt-badge">opt</span></td><td>Street address</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example</span></div>
+      <pre><span class="url-line">/?type=vcard&name=Harsh Yadav&phone=+919876543210&email=harsh@geetasystems.in&org=Geeta Systems&title=Founder</span></pre>
+    </div>
+
+    <!-- email -->
+    <h3 id="type-email">email — Email Compose</h3>
+    <p>Opens the device's mail client with pre-filled recipient, subject, and body fields.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>to</code></td><td><span class="req-badge">req</span></td><td>Recipient email address (validated)</td></tr>
+        <tr><td><code>subject</code></td><td><span class="opt-badge">opt</span></td><td>Email subject line</td></tr>
+        <tr><td><code>body</code></td><td><span class="opt-badge">opt</span></td><td>Email body text</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example</span></div>
+      <pre><span class="url-line">/?type=email&to=harsh@geetasystems.in&subject=Hello&body=Great to meet you!</span></pre>
+    </div>
+
+    <!-- sms -->
+    <h3 id="type-sms">sms — SMS Message</h3>
+    <p>Opens the device's SMS app with a pre-addressed, pre-filled message.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>phone</code></td><td><span class="req-badge">req</span></td><td>Phone number (7–15 digits, optional + prefix)</td></tr>
+        <tr><td><code>message</code></td><td><span class="opt-badge">opt</span></td><td>Pre-filled SMS body</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example</span></div>
+      <pre><span class="url-line">/?type=sms&phone=9876543210&message=Hi there!</span></pre>
+    </div>
+
+    <!-- phone -->
+    <h3 id="type-phone">phone — Phone Call</h3>
+    <p>Generates a <code>tel:</code> URI. Scanning dials the number immediately on most phones.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>number</code></td><td><span class="req-badge">req</span></td><td>Phone number including country code</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example</span></div>
+      <pre><span class="url-line">/?type=phone&number=+919876543210</span></pre>
+    </div>
+
+    <!-- geo -->
+    <h3 id="type-geo">geo — Geographic Location</h3>
+    <p>Generates a <code>geo:</code> URI. Scanning opens the device's map app at the specified coordinates.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>lat</code></td><td><span class="req-badge">req</span></td><td>Latitude — must be −90 to 90</td></tr>
+        <tr><td><code>lng</code></td><td><span class="req-badge">req</span></td><td>Longitude — must be −180 to 180</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example — Aligarh, UP</span></div>
+      <pre><span class="url-line">/?type=geo&lat=27.8974&lng=78.0880</span></pre>
+    </div>
+
+    <!-- whatsapp -->
+    <h3 id="type-whatsapp">whatsapp — WhatsApp</h3>
+    <p>Generates a <code>wa.me</code> deep link. Scanning opens a WhatsApp chat with the specified number and optional pre-filled text.</p>
+    <div class="callout warn"><span class="callout-icon">⚠️</span><div>The <code>phone</code> param must be in international format <strong>without</strong> the <code>+</code> sign. E.g. <code>919876543210</code> not <code>+919876543210</code>.</div></div>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>phone</code></td><td><span class="req-badge">req</span></td><td>International number without + (e.g. <code>919876543210</code>)</td></tr>
+        <tr><td><code>message</code></td><td><span class="opt-badge">opt</span></td><td>Pre-filled message text</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example</span></div>
+      <pre><span class="url-line">/?type=whatsapp&phone=919876543210&message=Hello from GS-QRHub!</span></pre>
+    </div>
+
+    <!-- event -->
+    <h3 id="type-event">event — Calendar Event</h3>
+    <p>Generates an iCalendar (VEVENT) QR code. Scanning imports the event into the device's calendar app.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><span class="req-badge">req</span></td><td>Event title (SUMMARY field)</td></tr>
+        <tr><td><code>start</code></td><td><span class="req-badge">req</span></td><td>Start datetime — ISO 8601 format (e.g. <code>2026-06-01T10:00:00Z</code>)</td></tr>
+        <tr><td><code>end</code></td><td><span class="opt-badge">opt</span></td><td>End datetime — ISO 8601 format</td></tr>
+        <tr><td><code>location</code></td><td><span class="opt-badge">opt</span></td><td>Venue or address</td></tr>
+        <tr><td><code>description</code></td><td><span class="opt-badge">opt</span></td><td>Event notes</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example</span></div>
+      <pre><span class="url-line">/?type=event&title=React Aligarh Meetup&start=2026-07-15T10:00:00Z&end=2026-07-15T13:00:00Z&location=Aligarh</span></pre>
+    </div>
+
+    <!-- crypto -->
+    <h3 id="type-crypto">crypto — Cryptocurrency Payment</h3>
+    <p>Generates a BIP-21 compatible payment URI. Scanning opens the corresponding wallet app to initiate a payment.</p>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>coin</code></td><td><span class="req-badge">req</span></td><td>Coin identifier (e.g. <code>bitcoin</code>, <code>ethereum</code>, <code>litecoin</code>)</td></tr>
+        <tr><td><code>address</code></td><td><span class="req-badge">req</span></td><td>Wallet address</td></tr>
+        <tr><td><code>amount</code></td><td><span class="opt-badge">opt</span></td><td>Payment amount in the coin's base unit</td></tr>
+        <tr><td><code>label</code></td><td><span class="opt-badge">opt</span></td><td>Human-readable label for the payment</td></tr>
+        <tr><td><code>message</code></td><td><span class="opt-badge">opt</span></td><td>A note attached to the payment request</td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example</span></div>
+      <pre><span class="url-line">/?type=crypto&coin=bitcoin&address=1A1zP1eP5QGefi2DMPTfTL5SLmv7Divf&amount=0.001&label=Invoice%20001</span></pre>
+    </div>
+
+    <!-- otp -->
+    <h3 id="type-otp">otp — TOTP Authenticator</h3>
+    <p>Generates an <code>otpauth://totp/</code> URI for importing into authenticator apps like Google Authenticator, Authy, or 1Password.</p>
+    <div class="callout info"><span class="callout-icon">🔐</span><div>The <code>secret</code> must be a valid Base32-encoded string (characters A–Z and 2–7). Padding characters (<code>=</code>) are allowed.</div></div>
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>issuer</code></td><td><span class="req-badge">req</span></td><td>App or service name shown in the authenticator</td></tr>
+        <tr><td><code>account</code></td><td><span class="req-badge">req</span></td><td>User identifier (usually email)</td></tr>
+        <tr><td><code>secret</code></td><td><span class="req-badge">req</span></td><td>Base32-encoded TOTP secret</td></tr>
+        <tr><td><code>algorithm</code></td><td><span class="opt-badge">opt</span></td><td><code>SHA1</code> (default) or <code>SHA256</code></td></tr>
+        <tr><td><code>digits</code></td><td><span class="opt-badge">opt</span></td><td><code>6</code> (default) or <code>8</code></td></tr>
+        <tr><td><code>period</code></td><td><span class="opt-badge">opt</span></td><td>Token validity in seconds. Default: <code>30</code></td></tr>
+      </tbody>
+    </table>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Example</span></div>
+      <pre><span class="url-line">/?type=otp&issuer=BtoE&account=user@btoe.in&secret=JBSWY3DPEHPK3PXP</span></pre>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── Barcodes ────────────────────────────────────────────────────────── -->
+    <h2 id="barcodes">Barcode Formats</h2>
+    <p>All barcode requests use <code>type=barcode</code>. The <code>format</code> parameter selects the barcode symbology.</p>
+
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Required</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>text</code></td><td><span class="req-badge">req</span></td><td>The data to encode. Must match the format's character set.</td></tr>
+        <tr><td><code>format</code></td><td><span class="opt-badge">opt</span></td><td>Barcode symbology. Default: <code>code128</code></td></tr>
+        <tr><td><code>includetext</code></td><td><span class="opt-badge">opt</span></td><td>Set to <code>false</code> to hide the human-readable text below the barcode. Default: <code>true</code></td></tr>
+      </tbody>
+    </table>
+
+    <h4>Supported Formats</h4>
+    <div class="format-list">
+      <span class="format-badge">code128</span>
+      <span class="format-badge">code39</span>
+      <span class="format-badge">ean13</span>
+      <span class="format-badge">ean8</span>
+      <span class="format-badge">upca</span>
+      <span class="format-badge">upce</span>
+      <span class="format-badge">interleaved2of5</span>
+      <span class="format-badge">gs1-128</span>
+      <span class="format-badge">pdf417</span>
+      <span class="format-badge">datamatrix</span>
+    </div>
+
+    <table class="param-table">
+      <thead><tr><th>Format</th><th>Use Case</th><th>Character Set</th></tr></thead>
+      <tbody>
+        <tr><td><code>code128</code></td><td>General-purpose; shipping, logistics</td><td>Full ASCII</td></tr>
+        <tr><td><code>code39</code></td><td>Industrial, automotive, ID cards</td><td>A–Z, 0–9, some symbols</td></tr>
+        <tr><td><code>ean13</code></td><td>Retail product barcodes</td><td>Exactly 13 digits</td></tr>
+        <tr><td><code>ean8</code></td><td>Small retail packages</td><td>Exactly 8 digits</td></tr>
+        <tr><td><code>upca</code></td><td>US retail (UPC)</td><td>Exactly 12 digits</td></tr>
+        <tr><td><code>upce</code></td><td>Compressed UPC for small items</td><td>6 digits (compressed)</td></tr>
+        <tr><td><code>interleaved2of5</code></td><td>Numeric-only logistics</td><td>Even number of digits</td></tr>
+        <tr><td><code>gs1-128</code></td><td>Supply chain / GS1 standard</td><td>Full ASCII with AI codes</td></tr>
+        <tr><td><code>pdf417</code></td><td>High-density 2D stacked barcode</td><td>Full ASCII (large payload)</td></tr>
+        <tr><td><code>datamatrix</code></td><td>Tiny 2D matrix, electronics/pharma</td><td>Full ASCII</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Examples</span></div>
+      <pre><span class="url-line">/?type=barcode&text=ABC123&format=code128</span>
+<span class="url-line">/?type=barcode&text=012345678905&format=ean13</span>
+<span class="url-line">/?type=barcode&text=HELLO WORLD&format=code39</span>
+<span class="url-line">/?type=barcode&text=12345678&format=ean8</span>
+<span class="url-line">/?type=barcode&text=Invoice-001&format=pdf417&size=500</span>
+<span class="url-line">/?type=barcode&text=GS1DATA&format=datamatrix&includetext=false</span></pre>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── Render Options ─────────────────────────────────────────────────── -->
+    <h2 id="render-options">Render Options</h2>
+    <p>These parameters apply to <strong>all types</strong> and control the visual output of the generated SVG.</p>
+
+    <table class="param-table">
+      <thead><tr><th>Param</th><th>Default</th><th>Range</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>size</code></td><td><code>300</code></td><td>50–2000</td><td>Output width in pixels</td></tr>
+        <tr><td><code>margin</code></td><td><code>4</code></td><td>0–20</td><td>Quiet zone modules around the code</td></tr>
+        <tr><td><code>darkColor</code></td><td><code>000000</code></td><td>Hex</td><td>Module (dark) color — hex without <code>#</code></td></tr>
+        <tr><td><code>lightColor</code></td><td><code>ffffff</code></td><td>Hex</td><td>Background (light) color — hex without <code>#</code></td></tr>
+        <tr><td><code>errorCorrectionLevel</code></td><td><code>M</code></td><td>L M Q H</td><td>QR error correction level (QR types only)</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="colors">Color Examples</h3>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">Color customisation</span></div>
+      <pre><span class="c"># Dark on white (default)</span>
+<span class="url-line">/?type=qr&text=Hello&darkColor=000000&lightColor=ffffff</span>
+
+<span class="c"># White on dark (inverted) — scan may not work on all readers</span>
+<span class="url-line">/?type=qr&text=Hello&darkColor=ffffff&lightColor=1a1a2e</span>
+
+<span class="c"># Brand green on cream</span>
+<span class="url-line">/?type=qr&url=https://geetasystems.in&darkColor=1a6b4a&lightColor=f7f6f2</span>
+
+<span class="c"># Large, high-reliability QR for print</span>
+<span class="url-line">/?type=qr&url=https://example.com&size=800&errorCorrectionLevel=H&margin=8</span></pre>
+    </div>
+
+    <h4>Error Correction Levels (QR only)</h4>
+    <table class="param-table">
+      <thead><tr><th>Level</th><th>Recovery</th><th>When to use</th></tr></thead>
+      <tbody>
+        <tr><td><code>L</code></td><td>~7%</td><td>Clean digital displays with no damage risk</td></tr>
+        <tr><td><code>M</code></td><td>~15%</td><td>Default — good balance for most uses</td></tr>
+        <tr><td><code>Q</code></td><td>~25%</td><td>Print materials that may get slightly damaged</td></tr>
+        <tr><td><code>H</code></td><td>~30%</td><td>High wear environments; allows logo overlay</td></tr>
+      </tbody>
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- ── All Endpoints ──────────────────────────────────────────────────── -->
+    <h2 id="endpoints">All Endpoints</h2>
+    <table class="param-table">
+      <thead><tr><th>Route</th><th>Method</th><th>Description</th><th>Returns</th></tr></thead>
+      <tbody>
+        <tr><td><code>/</code> <em>(with ?type)</em></td><td>GET</td><td>Generate QR or barcode</td><td>SVG</td></tr>
+        <tr><td><code>/</code> <em>(no ?type)</em></td><td>GET</td><td>Interactive UI</td><td>HTML</td></tr>
+        <tr><td><code>/ui</code></td><td>GET</td><td>Interactive generator UI</td><td>HTML</td></tr>
+        <tr><td><code>/docs</code></td><td>GET</td><td>This documentation</td><td>HTML</td></tr>
+        <tr><td><code>/health</code></td><td>GET</td><td>Service health check</td><td>JSON</td></tr>
+        <tr><td><code>/info</code></td><td>GET</td><td>Plain-text API summary</td><td>text/plain</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Health check response</h3>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">GET /health</span></div>
+      <pre>{
+  <span class="s">"success"</span>:        <span class="k">true</span>,
+  <span class="s">"service"</span>:        <span class="s">"GS-QRHub"</span>,
+  <span class="s">"status"</span>:         <span class="s">"healthy"</span>,
+  <span class="s">"uptime_seconds"</span>: <span class="n">3721</span>,
+  <span class="s">"timestamp"</span>:      <span class="s">"2026-06-02T10:00:00.000Z"</span>
+}</pre>
+    </div>
+
+    <!-- ── Rate Limiting ──────────────────────────────────────────────────── -->
+    <h2 id="rate-limiting">Rate Limiting</h2>
+    <p>The API applies a sliding-window rate limit per IP address. The default is <strong>100 requests per minute</strong>, configurable via the <code>RATE_LIMIT</code> environment variable.</p>
+
+    <table class="param-table">
+      <thead><tr><th>Header</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>RateLimit-Limit</code></td><td>Maximum requests allowed in the window</td></tr>
+        <tr><td><code>RateLimit-Remaining</code></td><td>Requests remaining in the current window</td></tr>
+        <tr><td><code>RateLimit-Reset</code></td><td>Seconds until the window resets</td></tr>
+      </tbody>
+    </table>
+
+    <p>When exceeded, the API responds with <code>HTTP 429</code>:</p>
+    <div class="code-block">
+      <div class="code-block-header"><span class="code-block-label">HTTP 429</span></div>
+      <pre>{
+  <span class="s">"success"</span>: <span class="e">false</span>,
+  <span class="s">"error"</span>:   <span class="s">"Rate limit exceeded. Max 100 requests per minute."</span>
+}</pre>
+    </div>
+
+    <!-- ── Headers ────────────────────────────────────────────────────────── -->
+    <h2 id="headers">Response Headers</h2>
+    <p>Every response from GS-QRHub includes the following custom headers:</p>
+    <table class="param-table">
+      <thead><tr><th>Header</th><th>Value</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>X-Powered-By</code></td><td><code>Geeta Systems</code></td><td>Vendor branding</td></tr>
+        <tr><td><code>X-Service</code></td><td><code>GS-QRHub</code></td><td>Service identifier</td></tr>
+        <tr><td><code>Cache-Control</code></td><td><code>public, max-age=3600</code></td><td>SVG responses are cacheable for 1 hour</td></tr>
+      </tbody>
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- ── Environment ────────────────────────────────────────────────────── -->
+    <h2>Environment Variables</h2>
+    <table class="param-table">
+      <thead><tr><th>Variable</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>PORT</code></td><td><code>3000</code></td><td>HTTP port the server listens on</td></tr>
+        <tr><td><code>NODE_ENV</code></td><td><code>development</code></td><td>Set to <code>production</code> to suppress error stack traces</td></tr>
+        <tr><td><code>SERVER_URL</code></td><td><code>http://localhost:3000</code></td><td>Public URL — used in the /info page</td></tr>
+        <tr><td><code>RATE_LIMIT</code></td><td><code>100</code></td><td>Max requests per minute per IP</td></tr>
+        <tr><td><code>CORS_ORIGINS</code></td><td><code>*</code></td><td>Comma-separated allowed origins, or <code>*</code> for all</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Footer -->
+    <div style="margin-top:64px;padding-top:24px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="font-size:.72rem;color:var(--ink-3);">© 2026 Geeta Systems · GS-QRHub v1.0.0</div>
+      <div style="display:flex;gap:16px;">
+        <a href="/"       style="color:var(--ink-3);font-size:.72rem;text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink-3)'">Generator</a>
+        <a href="/health" style="color:var(--ink-3);font-size:.72rem;text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink-3)'">Health</a>
+        <a href="/info"   style="color:var(--ink-3);font-size:.72rem;text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink-3)'">API Info</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── Copy button ───────────────────────────────────────────────────────────────
+function copy(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// ── Active nav highlight on scroll ────────────────────────────────────────────
+const sections = document.querySelectorAll('h2[id], h3[id]');
+const navLinks  = document.querySelectorAll('.nav-item');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-10% 0px -80% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
