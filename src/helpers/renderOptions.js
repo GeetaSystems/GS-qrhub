@@ -1,21 +1,10 @@
 'use strict';
-
 const config = require('../config');
-
-/**
- * Parse and normalize optional rendering parameters from query string.
- * Falls back to config defaults when values are absent or invalid.
- */
-const parseRenderOptions = (query) => {
-  const size = query.size ? parseInt(query.size, 10) : config.qr.defaultSize;
-  const margin = query.margin !== undefined ? parseInt(query.margin, 10) : config.qr.defaultMargin;
-  const darkColor = query.darkColor ? `#${query.darkColor}` : config.qr.defaultDarkColor;
-  const lightColor = query.lightColor ? `#${query.lightColor}` : config.qr.defaultLightColor;
-  const errorCorrectionLevel = query.errorCorrectionLevel
-    ? query.errorCorrectionLevel.toUpperCase()
-    : config.qr.defaultErrorCorrectionLevel;
-
-  return { size, margin, darkColor, lightColor, errorCorrectionLevel };
-};
-
+const parseRenderOptions = (q) => ({
+  size:                 q.size   ? parseInt(q.size,10)   : config.qr.defaultSize,
+  margin:               q.margin !== undefined ? parseInt(q.margin,10) : config.qr.defaultMargin,
+  darkColor:            q.darkColor  ? `#${q.darkColor}`  : config.qr.defaultDarkColor,
+  lightColor:           q.lightColor ? `#${q.lightColor}` : config.qr.defaultLightColor,
+  errorCorrectionLevel: q.errorCorrectionLevel ? q.errorCorrectionLevel.toUpperCase() : config.qr.defaultErrorCorrectionLevel,
+});
 module.exports = { parseRenderOptions };
