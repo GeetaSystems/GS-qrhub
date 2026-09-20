@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: gs-qrhub
+    runtime: node
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/app.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: RATE_LIMIT
+        value: 100
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: SERVER_URL
+        fromService:
+          type: web
+          name: gs-qrhub
+          property: host
+    healthCheckPath: /health
+    autoDeploy: true
