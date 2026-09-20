@@ -1,14 +1,12 @@
 {
   "name": "gs-qrhub",
   "version": "1.0.0",
-  "description": "GS-QRHub - Geeta Systems multipurpose QR and barcode generation service",
+  "description": "GS-QRHub — Geeta Systems multipurpose QR and barcode generation service",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "lint": "eslint src/"
+    "dev": "nodemon src/app.js"
   },
-  "keywords": ["qr", "barcode", "qrcode", "api", "svg"],
   "author": "Geeta Systems",
   "license": "MIT",
   "dependencies": {
@@ -24,7 +22,5 @@
   "devDependencies": {
     "nodemon": "^3.1.4"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "engines": { "node": ">=18.0.0" }
 }
